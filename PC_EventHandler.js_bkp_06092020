@@ -1,0 +1,104 @@
+function handleException(rowIndex,colIndex,ref,controlId)
+{
+	if(ref.id.indexOf('checkbox')!=-1)
+	{
+		var exceptionRaise=executeServerEvent("raiseClearException","formload",rowIndex,true).trim();
+		loadExceptions();
+		
+	}
+}
+
+
+function addRowPostHook(tableId)
+{
+	if(tableId=="Q_USR_0_PC_UID_DTLS")
+	{
+		handleUIDgridFieldEditable();
+	}	
+}
+
+
+function handleUIDgridFieldEditable()
+{
+	var getUIDTablerowCount = getGridRowCount('Q_USR_0_PC_UID_DTLS');
+	if(ActivityName=='OPS_Document_Checker' || ActivityName=='OPS_Bil_Document_Checker')
+	{	
+		setStyle("Q_USR_0_PC_UID_DTLS","disable","false");
+		for(var j=0;j<getUIDTablerowCount;j++)
+		{
+			//setCellDisabled("Q_USR_0_PC_UID_DTLS",j,0,"false");
+			//setCellDisabled("Q_USR_0_PC_UID_DTLS",j,1,"false");
+			setCellDisabled("Q_USR_0_PC_UID_DTLS",j,2,"true");
+		}
+	}
+	else if(ActivityName=='Control_Maker' || ActivityName=='Control_Checker' || ActivityName=='Compliance' || ActivityName=='Compliance_WC')
+	{
+		setStyle("Q_USR_0_PC_UID_DTLS","disable","true");
+		for(var j=0;j<getUIDTablerowCount;j++)
+		{
+			//setCellDisabled("Q_USR_0_PC_UID_DTLS",j,0,"true");
+			//setCellDisabled("Q_USR_0_PC_UID_DTLS",j,1,"true");
+			setCellDisabled("Q_USR_0_PC_UID_DTLS",j,2,"false");
+		}
+		//Below Line Added for Save Remarks Issue
+		document.getElementById("Q_USR_0_PC_UID_DTLS").removeAttribute("disabled");
+	}
+	else
+	{
+		setStyle("Q_USR_0_PC_UID_DTLS","disable","true");
+	}
+}
+
+function handleErrorHandlingFieldEditable()
+{
+	var getErrorTableRowCount = getGridRowCount('Q_USR_0_PC_ERR_HANDLING');
+	if(ActivityName=='Error_Hand_Data_Entry_Maker')
+	{
+		for(var j=0;j<getErrorTableRowCount;j++)
+		{
+			setCellDisabled("Q_USR_0_PC_ERR_HANDLING",j,0,"true");
+			setCellDisabled("Q_USR_0_PC_ERR_HANDLING",j,1,"true");
+			setCellDisabled("Q_USR_0_PC_ERR_HANDLING",j,2,"true");
+			setCellDisabled("Q_USR_0_PC_ERR_HANDLING",j,4,"true");
+			setCellDisabled("Q_USR_0_PC_ERR_HANDLING",j,5,"true");
+			setCellDisabled("Q_USR_0_PC_ERR_HANDLING",j,6,"true");
+			setCellDisabled("Q_USR_0_PC_ERR_HANDLING",j,7,"true");
+			
+			var Status =  getValueFromTableCell("Q_USR_0_PC_ERR_HANDLING",j,3);
+			if(Status=="New" || Status=="Failure" || Status=="Select" || Status=="")
+			{
+				setCellDisabled("Q_USR_0_PC_ERR_HANDLING",j,3,"false");
+			}
+			else
+			{
+				setCellDisabled("Q_USR_0_PC_ERR_HANDLING",j,3,"true");
+			}
+		}
+	} 
+	else
+	{
+		setStyle('Q_USR_0_PC_ERR_HANDLING','disable','true');
+	}
+}
+
+function validateInputtedMemoPad(rowIndex,colIndex,ref,controlId)
+{
+	if(colIndex == 2)
+	{
+		//var exceptionRaise=executeServerEvent("raiseClearException","formload",rowIndex,true).trim();
+	}
+	if(colIndex == 1)
+	{
+		if(getValueFromTableCell("Q_USR_0_PC_MEMOPAD_GRID",rowIndex,1))
+		{
+			setCellDisabled("Q_USR_0_PC_MEMOPAD_GRID", rowIndex,2,"false");
+		}
+		else
+		{
+			setCellDisabled("Q_USR_0_PC_MEMOPAD_GRID", rowIndex,2,"true");
+			if (getValueFromTableCell("Q_USR_0_PC_MEMOPAD_GRID",rowIndex,3) != '')
+				setTableCellData("Q_USR_0_PC_MEMOPAD_GRID",rowIndex,2, getValueFromTableCell("Q_USR_0_PC_MEMOPAD_GRID",rowIndex,3) ,true);
+		}
+	}
+}
+
